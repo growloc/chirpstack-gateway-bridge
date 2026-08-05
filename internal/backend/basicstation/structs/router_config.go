@@ -36,6 +36,7 @@ type RouterConfig struct {
 	FreqRange   []uint32     `json:"freq_range"`
 	DRs         [][]int      `json:"DRs"`
 	SX1301Conf  []SX1301Conf `json:"sx1301_conf"`
+	MaxEIRP     *float64     `json:"max_eirp,omitempty"`
 	MuxTime     *float64     `json:"MuxTime,omitempty"`
 }
 
@@ -116,6 +117,16 @@ func GetRouterConfig(region band.Name, netIDs []lorawan.NetID, joinEUIs [][2]lor
 	if err != nil {
 		return c, errors.Wrap(err, "get band config error")
 	}
+
+	// Set max_eirp from the band's downlink TX power.
+	// This is essential for regions like IN865 that are not recognized by
+	// Basic Station's built-in region table. When the region is unrecognized,
+	// Basic Station defaults to 14 dBm but will use max_eirp from the
+	// router_config if provided (since region==0 allows any max_eirp value).
+	// Without this, IN865 downlinks are capped at 14 dBm instead of 27 dBm.
+	downlinkTXPower := float64(b.GetDownlinkTXPower(0))
+	c.MaxEIRP = &downlinkTXPower
+
 	for i := 0; i < 16; i++ {
 		dr, err := b.GetDataRate(i)
 		if err != nil || (dr.Modulation != band.LoRaModulation && dr.Modulation != band.FSKModulation) {

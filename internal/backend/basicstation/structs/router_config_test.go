@@ -10,6 +10,8 @@ import (
 	"github.com/brocaar/lorawan/band"
 )
 
+func float64Ptr(v float64) *float64 { return &v }
+
 func TestRouterConfig(t *testing.T) {
 	tests := []struct {
 		Name         string
@@ -46,6 +48,7 @@ func TestRouterConfig(t *testing.T) {
 				Region:      "EU863",
 				HWSpec:      "sx1301/1",
 				FreqRange:   []uint32{863000000, 870000000},
+				MaxEIRP:     float64Ptr(14),
 				DRs: [][]int{
 					{12, 125, 0},
 					{11, 125, 0},
@@ -119,6 +122,7 @@ func TestRouterConfig(t *testing.T) {
 				Region:      "EU863",
 				HWSpec:      "sx1301/1",
 				FreqRange:   []uint32{863000000, 870000000},
+				MaxEIRP:     float64Ptr(14),
 				DRs: [][]int{
 					{12, 125, 0},
 					{11, 125, 0},
@@ -228,6 +232,7 @@ func TestRouterConfig(t *testing.T) {
 				Region:      "US902",
 				HWSpec:      "sx1301/1",
 				FreqRange:   []uint32{902000000, 928000000},
+				MaxEIRP:     float64Ptr(20),
 				DRs: [][]int{
 					{10, 125, 0},
 					{9, 125, 0},
